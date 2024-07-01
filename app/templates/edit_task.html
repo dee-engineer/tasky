@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}{{block.super}}Edit Task{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
+    <h1 class="text-2xl text-center font-semibold mb-4">Edit Task</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-4">
+            <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+            {{ form.title.errors }}
+            {{ form.title }}
+        </div>
+        <div class="mb-4">
+            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+            {{ form.description.errors }}
+            {{ form.description }}
+        </div>
+        <div class="mb-4">
+            <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+            {{ form.status.errors }}
+            {{ form.status }}
+        </div>
+        <div class="mb-4">
+            <label for="priority" class="block text-sm font-medium text-gray-700">Priority</label>
+            {{ form.priority.errors }}
+            {{ form.priority }}
+        </div>
+        <div class="mb-4">
+            <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date</label>
+            {{ form.due_date.errors }}
+            {{ form.due_date }}
+        </div>
+        <div class="mb-4">
+            <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+            {{ form.category.errors }}
+            {{ form.category }}
+        </div>
+        <div class="mb-4">
+            <label for="assigned_to" class="block text-sm font-medium text-gray-700">Assigned To</label>
+            {{ form.assigned_to.errors }}
+            {{ form.assigned_to }}
+        </div>
+        <div class="mb-4">
+            <button type="submit" class="bg-blue-700 text-white rounded-md py-2 px-4 hover:bg-blue-600">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

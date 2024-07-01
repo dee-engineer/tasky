@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tasky - {% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <!-- Flex Container -->
+    <div class="flex h-screen">
+        
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-gray-200 text-gray-900 w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
+            <a href="{% url 'home' %}" class="text-blue-700 flex items-center space-x-2 px-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" />
+                </svg>
+                <span class="text-2xl">Tasky</span>
+            </a>
+            <nav>
+                <a href="{% url 'home' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-300 {% if request.path == '/' %}bg-blue-700 text-white{% else %}text-gray-900{% endif %}">Dashboard</a>
+                <a href="{% url 'tasks' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-300 {% if request.path == '/tasks/' %}bg-blue-700 text-white{% else %}text-gray-900{% endif %}">Tasks</a>
+                <a href="#" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-300">Calendar</a>
+                <a href="{% url 'members' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-300 {% if request.path == '/members/' %}bg-blue-700 text-white{% else %}text-gray-900{% endif %}">Members</a>
+            </nav>
+        </div>
+
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col">
+            
+            <!-- Navbar -->
+            <nav class="p-4">
+                <div class="container mx-auto flex items-center justify-between">
+                    <!-- Search Form -->
+                    <form class="hidden md:flex bg-gray-200 rounded-md p-1 items-center" action="{% url 'home' %}" method="GET">
+                        <div class="relative flex">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                    class="w-6 h-6 text-gray-400 dark:text-neutral-200">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                                    />
+                                </svg>
+                            </span>
+                            <input
+                                type="search"
+                                name="q"
+                                class="pl-10 relative m-0 block flex-auto rounded border border-solid border-neutral-200 bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-surface outline-none transition duration-200 ease-in-out placeholder:text-neutral-500 focus:z-[3] focus:border-primary focus:shadow-inset focus:outline-none motion-reduce:transition-none dark:border-white/10 dark:text-white dark:placeholder:text-neutral-200 dark:autofill:shadow-autofill dark:focus:border-primary"
+                                placeholder="Search tasks"
+                                aria-label="Search"
+                                id="exampleFormControlInput2"
+                                aria-describedby="button-addon2"
+                            />
+                        </div>
+                    </form>
+                    
+                    <div class="md:hidden text-blue-700">
+                        <a href="{% url 'home' %}" class="flex items-center space-x-2 px-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" />
+                            </svg>
+                            <span class="text-2xl">Tasky</span>
+                        </a>
+                    </div>
+
+                    <div class="hidden md:flex space-x-4">
+                        <a href="" class="text-gray-900 hover:text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
+                            </svg>
+                        </a>
+                        <a href="" class="text-gray-900 hover:text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
+                            </svg>
+                        </a>
+                        <a href="" class="text-gray-900 hover:text-white transition duration-300">
+                            <img class="rounded-full w-5 h-5" src="{{ user.image.url }}" alt="{{ user.username }}'s profile picture">
+                        </a>                        
+                    </div>
+                    <button id="sidebarToggle" class="md:hidden text-blue-700 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <div class="p-4 flex-1 overflow-auto">
+                {% block content %}
+                <!-- Your page content goes here -->
+                {% endblock %}
+            </div>
+
+        </div>
+    </div>
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+<script src="{% static 'js/script.js' %}"></script>
+
+</body>
+</html>

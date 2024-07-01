@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %} {{block.super}}Home{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row justify-between items-center">
+    <!-- Left Side Dropdown Buttons -->
+    <div class="flex space-x-4 mb-4 md:mb-0">
+        <!-- Preview Modal Trigger Button -->
+        <button id="previewButton" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              </svg>              
+            Preview
+        </button>
+
+        <!-- Sort Modal Trigger Button -->
+        <button id="sortButton" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
+            </svg>
+            Sort
+        </button>
+
+        <!-- Filter Modal Trigger Button -->
+        <button id="filterButton" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+              </svg>              
+            Filter
+        </button>
+    </div>
+
+
+    <!-- Right Side Buttons -->
+    <div class="flex space-x-4">
+        <!-- User Images -->
+        <div class="flex items-center -space-x-4">
+            {% for user in users %}
+            <div class="relative {% if forloop.first %}ml-0{% else %}ml-4{% endif %}">
+                <a href="{% url 'members' %}">
+                    <img class="w-8 h-8 rounded-full" src="{{ user.image.url }}" alt="{{ user.username }}">
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Add User -->
+        <a href="{% url 'create_user' %}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+        </a>
+
+        <!-- Add Task -->
+        <a href="{% url 'add_task' %}" class="block bg-blue-700 text-white rounded-md py-1 px-4 text-center hover:bg-blue-600">+ Add task</a>
+    </div>
+</div>
+
+  
+
+<div class="container mx-auto mt-8">
+  <!-- Display search query if exists -->
+  {% if query %}
+  <p class="text-gray-600 mb-4">Search results for: <strong>{{ query }}</strong></p>
+  {% endif %}
+
+  <!-- Content Rows -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="taskLists">
+      <!-- In Progress Tasks -->
+      <div id="inProgressList" class="task-list">
+          <div class="flex items-center pl-3 justify-between text-lg font-semibold mb-4 rounded max-w-xs mx-auto p-1 border-2 border-blue-500">
+              <span>In Progress <small class="text-gray-400">({{ inprogress_count }})</small></span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+              </svg>
+          </div>
+          <div id="inProgressTasks">
+              {% for task in in_progress_tasks %}
+                  <div class="task-card" data-task-id="{{ task.pk }}">
+                      {% include 'task_card.html' with task=task %}
+                  </div>
+              {% endfor %}
+          </div>
+      </div>
+
+      <!-- Completed Tasks -->
+      <div id="completedList" class="task-list">
+          <div class="flex items-center pl-3 justify-between text-lg font-semibold mb-4 rounded max-w-xs mx-auto p-1 border-2 border-green-500">
+              <span>Completed Task <small class="text-gray-400">({{ completed_count }})</small></span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+              </svg>
+          </div>
+          <div id="completedTasks">
+              {% for task in completed_tasks %}
+                  <div class="task-card" data-task-id="{{ task.pk }}">
+                      {% include 'task_card.html' with task=task %}
+                  </div>
+              {% endfor %}
+          </div>
+      </div>
+
+      <!-- Overdue Tasks -->
+      <div id="overdueList" class="task-list">
+          <div class="flex items-center pl-3 justify-between text-lg font-semibold mb-4 rounded max-w-xs mx-auto p-1 border-2 border-red-500">
+              <span>Over-due <small class="text-gray-400">({{ overdue_count }})</small></span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+              </svg>
+          </div>
+          <div id="overdueTasks">
+              {% for task in overdue_tasks %}
+                  <div class="task-card" data-task-id="{{ task.pk }}">
+                      {% include 'task_card.html' with task=task %}
+                  </div>
+              {% endfor %}
+          </div>
+      </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var sortableLists = document.querySelectorAll('.task-list');
+
+    sortableLists.forEach(function (list) {
+        new Sortable(list, {
+            animation: 150,
+            group: 'task-list',
+            onEnd: function (evt) {
+                var taskElement = evt.item;
+                var taskId = taskElement.dataset.taskId;
+                console.log('Task ID:', taskId);
+
+                // Check if taskId exists and is not undefined
+                if (taskId) {
+                    // Determine the new status based on the target list ID
+                    var newStatus = '';
+                    if (evt.to.id === 'completedList') {
+                        newStatus = 'completed';
+                    } else if (evt.to.id === 'inProgressList') {
+                        newStatus = 'in_progress';
+                    } else if (evt.to.id === 'overdueList') {
+                        newStatus = 'overdue';
+                    }
+
+                    // Update the task status asynchronously
+                    updateTaskStatus(taskId, newStatus);
+                }
+            }
+        });
+    });
+
+    function updateTaskStatus(taskId, newStatus) {
+        // Make an AJAX request to update the task status
+        var url = '/update_task_status/' + taskId + '/';
+        var formData = new FormData();
+        formData.append('status', newStatus);
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}' // Ensure to include CSRF token for Django
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Handle success response if needed
+            console.log('Task status updated successfully:', data);
+        })
+        .catch(error => {
+            console.error('Error updating task status:', error);
+        });
+    }
+});
+</script>
+
+
+<!-- Modal for Sorting -->
+<div id="sortModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="text-xl font-semibold">Sort Tasks</h3>
+        <button id="closeSortModal" class="text-gray-600 hover:text-gray-900">&times;</button>
+      </div>
+      <div class="mt-4">
+        <form id="sortForm" action="{% url 'home' %}" method="get">
+          <div class="mb-4">
+            <label for="sort_by" class="block text-gray-700">Sort by</label>
+            <select name="sort_by" id="sort_by" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+              <option value="">-- Select --</option>
+              <option value="priority">Priority</option>
+              <option value="due_date">Due Date</option>
+              <option value="category">Category</option>
+            </select>
+          </div>
+          <div class="flex justify-end">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Apply</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal for Filtering -->
+  <div id="filterModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="text-xl font-semibold">Filter Tasks</h3>
+        <button id="closeFilterModal" class="text-gray-600 hover:text-gray-900">&times;</button>
+      </div>
+      <div class="mt-4">
+        <form id="filterForm" action="{% url 'home' %}" method="get">
+          <div class="mb-4">
+            <label for="filter_by" class="block text-gray-700">Filter by Status</label>
+            <select name="filter_by" id="filter_by" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+              <option value="all">All</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="overdue">Overdue</option>
+            </select>
+          </div>
+          <div class="flex justify-end">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Apply</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal for Preview -->
+  <div id="previewModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="text-xl font-semibold">Preview Tasks</h3>
+        <button id="closePreviewModal" class="text-gray-600 hover:text-gray-900">&times;</button>
+      </div>
+      <div class="mt-4">
+        <form id="previewForm" action="{% url 'home' %}" method="get">
+          <div class="mb-4">
+            <label for="preview_by" class="block text-gray-700">Preview by</label>
+            <select name="preview_by" id="preview_by" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+              <option value="">-- Select --</option>
+              <option value="task_summary">Task Summary</option>
+              <option value="task_detail">Task Detail</option>
+            </select>
+          </div>
+          <div class="flex justify-end">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Apply</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    document.getElementById('sortButton').addEventListener('click', function() {
+      document.getElementById('sortModal').classList.remove('hidden');
+    });
+  
+    document.getElementById('filterButton').addEventListener('click', function() {
+      document.getElementById('filterModal').classList.remove('hidden');
+    });
+  
+    document.getElementById('previewButton').addEventListener('click', function() {
+      document.getElementById('previewModal').classList.remove('hidden');
+    });
+  
+    document.getElementById('closeSortModal').addEventListener('click', function() {
+      document.getElementById('sortModal').classList.add('hidden');
+    });
+  
+    document.getElementById('closeFilterModal').addEventListener('click', function() {
+      document.getElementById('filterModal').classList.add('hidden');
+    });
+  
+    document.getElementById('closePreviewModal').addEventListener('click', function() {
+      document.getElementById('previewModal').classList.add('hidden');
+    });
+  
+    // Close modals when clicking outside the modal content
+    document.getElementById('sortModal').addEventListener('click', function(event) {
+      if (event.target.id === 'sortModal') {
+        document.getElementById('sortModal').classList.add('hidden');
+      }
+    });
+  
+    document.getElementById('filterModal').addEventListener('click', function(event) {
+      if (event.target.id === 'filterModal') {
+        document.getElementById('filterModal').classList.add('hidden');
+      }
+    });
+  
+    document.getElementById('previewModal').addEventListener('click', function(event) {
+      if (event.target.id === 'previewModal') {
+        document.getElementById('previewModal').classList.add('hidden');
+      }
+    });
+  </script>
+    
+
+{% endblock %}
