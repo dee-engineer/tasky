@@ -68,14 +68,14 @@
   <!-- Content Rows -->
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6" id="taskLists">
       <!-- In Progress Tasks -->
-      <div id="inProgressList" class="task-list">
+      <div id="inProgressList">
           <div class="flex items-center pl-3 justify-between text-lg font-semibold mb-4 rounded max-w-xs mx-auto p-1 border-2 border-blue-500">
               <span>In Progress <small class="text-gray-400">({{ inprogress_count }})</small></span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
               </svg>
           </div>
-          <div id="inProgressTasks">
+          <div id="inProgressTasks" class="task-list">
               {% for task in in_progress_tasks %}
                   <div class="task-card" data-task-id="{{ task.pk }}">
                       {% include 'task_card.html' with task=task %}
@@ -85,14 +85,14 @@
       </div>
 
       <!-- Completed Tasks -->
-      <div id="completedList" class="task-list">
+      <div id="completedList" >
           <div class="flex items-center pl-3 justify-between text-lg font-semibold mb-4 rounded max-w-xs mx-auto p-1 border-2 border-green-500">
               <span>Completed Task <small class="text-gray-400">({{ completed_count }})</small></span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
               </svg>
           </div>
-          <div id="completedTasks">
+          <div id="completedTasks" class="task-list">
               {% for task in completed_tasks %}
                   <div class="task-card" data-task-id="{{ task.pk }}">
                       {% include 'task_card.html' with task=task %}
@@ -102,14 +102,14 @@
       </div>
 
       <!-- Overdue Tasks -->
-      <div id="overdueList" class="task-list">
+      <div id="overdueList">
           <div class="flex items-center pl-3 justify-between text-lg font-semibold mb-4 rounded max-w-xs mx-auto p-1 border-2 border-red-500">
               <span>Over-due <small class="text-gray-400">({{ overdue_count }})</small></span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
               </svg>
           </div>
-          <div id="overdueTasks">
+          <div id="overdueTasks" class="task-list">
               {% for task in overdue_tasks %}
                   <div class="task-card" data-task-id="{{ task.pk }}">
                       {% include 'task_card.html' with task=task %}
@@ -121,67 +121,72 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var sortableLists = document.querySelectorAll('.task-list');
+document.addEventListener('DOMContentLoaded', function () {
+  var sortableLists = document.querySelectorAll('.task-list');
 
-    sortableLists.forEach(function (list) {
-        new Sortable(list, {
-            animation: 150,
-            group: 'task-list',
-            onEnd: function (evt) {
-                var taskElement = evt.item;
-                var taskId = taskElement.dataset.taskId;
-                console.log('Task ID:', taskId);
-
-                // Check if taskId exists and is not undefined
-                if (taskId) {
-                    // Determine the new status based on the target list ID
-                    var newStatus = '';
-                    if (evt.to.id === 'completedList') {
-                        newStatus = 'completed';
-                    } else if (evt.to.id === 'inProgressList') {
-                        newStatus = 'in_progress';
-                    } else if (evt.to.id === 'overdueList') {
-                        newStatus = 'overdue';
-                    }
-
-                    // Update the task status asynchronously
-                    updateTaskStatus(taskId, newStatus);
+  sortableLists.forEach(function (list) {
+      new Sortable(list, {
+          animation: 150,
+          group: 'task-list',
+          onEnd: function (evt) {
+            var taskElement = evt.item;
+            var taskId = taskElement.dataset.taskId;
+            console.log('Task Element:', taskElement);
+            console.log('Event:', evt);
+            console.log('Task ID:', taskId);
+        
+            if (taskId) {
+                var newStatus = '';
+                if (evt.to.id === 'completedTasks') {
+                    newStatus = 'completed';
+                } else if (evt.to.id === 'inProgressTasks') {
+                    newStatus = 'in_progress';
+                } else if (evt.to.id === 'overdueTasks') {
+                    newStatus = 'overdue';
                 }
+                console.log(`Updating task ID ${taskId} to status ${newStatus}`);
+                updateTaskStatus(taskId, newStatus);
             }
-        });
-    });
+        }
+      });
+  });
 
-    function updateTaskStatus(taskId, newStatus) {
-        // Make an AJAX request to update the task status
-        var url = '/update_task_status/' + taskId + '/';
-        var formData = new FormData();
-        formData.append('status', newStatus);
+  function updateTaskStatus(taskId, newStatus) {
+    var formData = new FormData();
+    formData.append('status', newStatus);
 
-        fetch(url, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}' // Ensure to include CSRF token for Django
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Handle success response if needed
-            console.log('Task status updated successfully:', data);
-        })
-        .catch(error => {
-            console.error('Error updating task status:', error);
-        });
+    // Log FormData entries for debugging
+    for (var pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
     }
+
+    fetch(`/update_task_status/${taskId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.error || 'Unknown error');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data.message);
+        // Reload the page after successful update
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 });
 </script>
-
 
 <!-- Modal for Sorting -->
 <div id="sortModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">

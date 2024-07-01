@@ -150,10 +150,13 @@ def delete_task(request, pk):
 def update_task_status(request, task_id):
     task = get_object_or_404(Task, pk=task_id)
     new_status = request.POST.get('status')
-    task.status = new_status
-    task.save()
-    print(task.status, "called")
-    return JsonResponse({'message': 'Task status updated successfully'})
+    
+    if new_status:
+        task.status = new_status
+        task.save()
+        return JsonResponse({'message': 'Task status updated successfully'})
+    else:
+        return JsonResponse({'error': 'Invalid status provided'}, status=400)
 
 
 def login_user(request):
